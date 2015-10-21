@@ -1,0 +1,25 @@
+{
+  "name": "sampleapi",
+  "version": "0.0.1",
+  "description": "",
+  "main": "indexs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qh4r/nodeSampleApi.git"
+  },
+  "author": "qh4r",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qh4r/nodeSampleApi/issues"
+  },
+  "homepage": "https://github.com/qh4r/nodeSampleApi#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "gulp": "^3.9.0",
+    "gulp-nodemon": "^2.0.4",
+    "mongoose": "^4.1.12"
+  }
+}
