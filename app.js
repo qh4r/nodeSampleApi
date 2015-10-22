@@ -2,7 +2,14 @@ var express = require('express'),
     mongoose = require('mongoose'),
     bodyParser = require('body-parser');
 
-var db = mongoose.connect('mongodb://localhost/bookAPI');
+var db;
+
+//for test
+if (process.env.ENV === 'Test') {
+    db = mongoose.connect('mongodb://localhost/bookAPI_test');
+} else {
+    db = mongoose.connect('mongodb://localhost/bookAPI');
+}
 
 var app = express();
 
@@ -30,3 +37,6 @@ app.get('/', function (req, res) {
 app.listen(port, function () {
     console.log('Api running with gulp on port: ' + port);
 });
+
+//for supertest
+module.exports = app;
