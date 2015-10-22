@@ -28,7 +28,7 @@ var bookController = function (Book) {
                 if (err) return res.status(599).json(err);
 
                 res.status(201);
-                res.json(result);
+                res.json(booksList);
             });
         }
     };
@@ -45,7 +45,18 @@ var bookController = function (Book) {
         Book.find(query, function (err, result) {
             if (err)return res.status(599).json([err]);
 
-            res.status(200).json(result);
+            var booksList = [];
+
+            result.forEach(function(book, index, array){
+                //to escape mongoose model validation and ger simple object
+                var newBook = book.toJSON();
+                newBook.links = {};
+                newBook.links.self = 'http://' + req.headers.host + '/api/books/' + book.id;
+
+                booksList.push(newBook);
+            })
+
+            res.status(200).json(booksList);
         });
     };
 
