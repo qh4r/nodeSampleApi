@@ -18,15 +18,19 @@ var bookController = function (Book) {
     };
 
     var post = function (req, res) {
-        console.log(req.body);
         var book = new Book(req.body);
-        //book.author = req.body.author;
-        console.log(book);
-        book.save(function (err, result) {
-            if (err) return res.status(599).json(err);
+        if (!req.body.title) {
+            res.status(400);
+            res.send('Title is required');
+        }
+        else {
+            book.save(function (err, result) {
+                if (err) return res.status(599).json(err);
 
-            res.status(201).json(result);
-        });
+                res.status(201);
+                res.json(result);
+            });
+        }
     };
 
     var getAll = function (req, res) {
@@ -56,7 +60,6 @@ var bookController = function (Book) {
         req.book.read = req.body.read;
         req.book.save(function (err) {
             if (err) return res.status(599).json(err);
-            console.log(req.book);
             res.status(201).json(req.book);
         })
     };
@@ -72,7 +75,6 @@ var bookController = function (Book) {
         }
         req.book.save(function (err) {
             if (err) res.status(599).json(err);
-            console.log(req.book);
             res.status(201).json(req.book);
         });
     };
