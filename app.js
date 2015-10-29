@@ -35,15 +35,21 @@ app.use(bodyParser.json());
 //Models
 var Book = require('./models/bookModel')(sequelize);
 
-//var Review = require('./models/reviewModel');
+var Review = require('./models/reviewModel')(sequelize);
+
+Book.hasMany(Review, {foreignKey: 'Book_FK'});
+
+//Review.belongsTo(Book, {foreignKey: 'Book_FK'});
+
+//relations setup
 
 //Sync with db
 sequelize.sync().then(function(){
 
 })
 //Controllers
-//var bookController = require('./controllers/bookController')(Book, Review.Model);
-var bookController = require('./controllers/bookController')(Book);
+var bookController = require('./controllers/bookController')(Book, Review);
+//var bookController = require('./controllers/bookController')(Book);
 
 //Routers
 var bookRouter = require('./routes/bookRoutes')(bookController);
