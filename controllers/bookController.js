@@ -5,26 +5,17 @@
 var bookController = function (Book, Review) {
 
     var fetchBook = function (req, res, next) {
-        Book.findById(req.params.bookId, function (err, book) {
-            if (err)return res.status(599).json([err]);
-
-            if (book) {
-                req.book = book;
-                next();
-            } else {
-                res.status(404).json({"error": "No book found"});
-            }
-        });
+        next();
     };
 
     var post = function (req, res) {
-        var book = new Book(req.body);
+        //var book = Book.create(req.body);
         if (!req.body.title) {
             res.status(400);
             res.send('Title is required');
         }
         else {
-            book.save(function (err, result) {
+            Book.create(req.body).then(function (err, result) {
                 if (err) return res.status(599).json(err);
 
                 res.status(201);
@@ -41,13 +32,13 @@ var bookController = function (Book, Review) {
             if (req.query.title)query.title = req.query.title;
             if (req.query.read)query.read = req.query.read;
         }
-
-        Book.find(query, function (err, result) {
+        console.log(query);
+        Book.findAll(query).then(function (err, result) {
             if (err)return res.status(599).json([err]);
 
             var booksList = [];
 
-            result.forEach(function(book, index, array){
+            result.forEach(function (book, index, array) {
                 //to escape mongoose model validation and ger simple object
                 var newBook = book.toJSON();
                 newBook.links = {};
@@ -61,18 +52,50 @@ var bookController = function (Book, Review) {
     };
 
     var getSingle = function (req, res) {
-        res.status(200).json(req.book);
+        console.log(req.book);
+
+        Book.findById(req.params.bookId).then(function (err, book) {
+            if (err)return res.status(599).json([err]);
+
+            if (book) {
+                console.log(req.book);
+
+                res.status(200).json(req.book);
+
+            } else {
+                res.status(404).json({"error": "No book found"});
+            }
+        });
     };
 
     var put = function (req, res) {
-        req.book.title = req.body.title;
-        req.book.author = req.body.author;
-        req.book.genre = req.body.genre;
-        req.book.read = req.body.read;
-        req.book.save(function (err) {
-            if (err) return res.status(599).json(err);
+        if (req.body.id) {
+            delete req.body.id;
+        }
+        var book = {};
+        console.log(book);
+
+        book.title = req.body.title;
+        book.author = req.body.author;
+        book.genre = req.body.genre;
+        book.read = req.body.read;
+        console.log(book);
+        Book.update(book, {
+            where: {
+                id: req.params.bookId
+            }
+        }).then(function (err) {
+            if (err) {
+                console.log(book);
+                return res.status(599).json(err);
+            }
+
+            console.log(book);
+
             res.status(201).json(req.book);
-        })
+        }).catch(function (e) {
+            console.log(e.message);
+        });
     };
 
     var patch = function (req, res) {
@@ -80,38 +103,59 @@ var bookController = function (Book, Review) {
         //req.book.author = req.body.author || req.book.author;
         //req.book.genre = req.body.genre || req.book.genre;
         //req.book.result = req.body.result || req.book.result;
-        if (req.body._id) delete req.body._id;
-        for (var x in req.body) {
-            req.book[x] = req.body[x];
+        if (req.body._id) {
+            delete req.body._id;
         }
-        req.book.save(function (err) {
-            if (err) res.status(599).json(err);
+        var book = {};
+        console.log(book);
+
+        for (var x in req.body) {
+            book[x] = req.body[x];
+        }
+        console.log(book);
+        Book.update(book, {
+            where: {
+                id: req.params.bookId
+            }
+        }).then(function (err) {
+            if (err) {
+                console.log(book);
+
+                res.status(599).json(err);
+            }
+            console.log(book);
+
             res.status(201).json(req.book);
+        }).catch(function (e) {
+            console.log(e.message);
         });
     };
 
     var deleteBook = function (req, res) {
-        req.book.remove(function (err) {
-            if (err) return res.status(500).json(err);
-
-            res.status(204).json({message: "book removed"});
+        Book.destroy({
+            where: {id: req.params.bookId}
         })
+            .then(function () {
+                    res.status(204).json({message: "book removed"});
+            }).catch(function (e) {
+                return res.status(500).json(err);
+            });
     };
 
-    var addReview = function(req, res){
-        var review = new Review(req.body);
-        if(!review.author){
-            return res.status(400).json({error: new Error("wrong input")})
-        }
-        console.log(req.book);
-        req.book.reviews.push(review);
-        req.book.save(function(err){
-            if (err) return res.status(599).json(err);
-
-
-            res.status(201).json(req.book);
-        })
-    };
+    //var addReview = function(req, res){
+    //    var review = new Review(req.body);
+    //    if(!review.author){
+    //        return res.status(400).json({error: new Error("wrong input")})
+    //    }
+    //    console.log(req.book);
+    //    req.book.reviews.push(review);
+    //    req.book.save(function(err){
+    //        if (err) return res.status(599).json(err);
+    //
+    //
+    //        res.status(201).json(req.book);
+    //    })
+    //};
 
     return {
         post: post,
@@ -121,7 +165,7 @@ var bookController = function (Book, Review) {
         patch: patch,
         delete: deleteBook,
         fetchBook: fetchBook,
-        addReview: addReview
+        //addReview: addReview
     };
 };
 

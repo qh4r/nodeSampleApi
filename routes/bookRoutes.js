@@ -8,16 +8,16 @@ var routes = function (bookController) {
         .get(bookController.getAll);
 
 
-    bookRouter.use('/:bookId', bookController.fetchBook);
+   // bookRouter.use('/:bookId', bookController.fetchBook);
     bookRouter.route('/:bookId')
         .get(bookController.getSingle)
         .put(bookController.put)
         .patch(bookController.patch)
         .delete(bookController.delete);
 
-    bookRouter.route('/:bookId/review')
-        .get(bookController.getSingle)
-        .post(bookController.addReview);
+    //bookRouter.route('/:bookId/review')
+    //    .get(bookController.getSingle)
+    //    .post(bookController.addReview);
 
     return bookRouter;
 };

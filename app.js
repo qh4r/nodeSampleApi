@@ -4,12 +4,26 @@ var express = require('express'),
 
 var db;
 
-//for test
-if (process.env.ENV === 'Test') {
-    db = mongoose.connect('mongodb://localhost/bookAPI_test');
-} else {
-    db = mongoose.connect('mongodb://localhost/bookAPI');
-}
+////for test
+//if (process.env.ENV === 'Test') {
+//    db = mongoose.connect('mongodb://localhost/bookAPI_test');
+//} else {
+//    db = mongoose.connect('mongodb://localhost/bookAPI');
+//}
+
+var Sequelize = require('sequelize')
+    , sequelize = new Sequelize('nodeTest', 'nodeUser', 'ewqasdcxz', {
+        dialect: "postgres", // or 'sqlite', 'postgres', 'mariadb'
+        port: 5432, // or 5432 (for postgres)
+    });
+
+sequelize
+    .authenticate()
+    .then(function (err) {
+        console.log('Connection has been established successfully.');
+    }, function (err) {
+        console.log('Unable to connect to the database:', err);
+    });
 
 var app = express();
 
@@ -19,12 +33,17 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 //Models
-var Book = require('./models/bookModel');
+var Book = require('./models/bookModel')(sequelize);
 
-var Review = require('./models/reviewModel');
+//var Review = require('./models/reviewModel');
 
+//Sync with db
+sequelize.sync().then(function(){
+
+})
 //Controllers
-var bookController = require('./controllers/bookController')(Book, Review.Model);
+//var bookController = require('./controllers/bookController')(Book, Review.Model);
+var bookController = require('./controllers/bookController')(Book);
 
 //Routers
 var bookRouter = require('./routes/bookRoutes')(bookController);
