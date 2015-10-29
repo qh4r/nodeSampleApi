@@ -2,7 +2,7 @@
  * Created by qh4r on 22.10.15.
  */
 
-var bookController = function (Book) {
+var bookController = function (Book, Review) {
 
     var fetchBook = function (req, res, next) {
         Book.findById(req.params.bookId, function (err, book) {
@@ -28,7 +28,7 @@ var bookController = function (Book) {
                 if (err) return res.status(599).json(err);
 
                 res.status(201);
-                res.json(booksList);
+                res.json(result);
             });
         }
     };
@@ -54,7 +54,7 @@ var bookController = function (Book) {
                 newBook.links.self = 'http://' + req.headers.host + '/api/books/' + book.id;
 
                 booksList.push(newBook);
-            })
+            });
 
             res.status(200).json(booksList);
         });
@@ -98,6 +98,21 @@ var bookController = function (Book) {
         })
     };
 
+    var addReview = function(req, res){
+        var review = new Review(req.body);
+        if(!review.author){
+            return res.status(400).json({error: new Error("wrong input")})
+        }
+        console.log(req.book);
+        req.book.reviews.push(review);
+        req.book.save(function(err){
+            if (err) return res.status(599).json(err);
+
+
+            res.status(201).json(req.book);
+        })
+    };
+
     return {
         post: post,
         getAll: getAll,
@@ -105,7 +120,8 @@ var bookController = function (Book) {
         put: put,
         patch: patch,
         delete: deleteBook,
-        fetchBook: fetchBook
+        fetchBook: fetchBook,
+        addReview: addReview
     };
 };
 

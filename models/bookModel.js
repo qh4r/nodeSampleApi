@@ -1,5 +1,7 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    review = require('./reviewModel');
+
 
 var bookSchema = new Schema({
     title: {
@@ -14,7 +16,8 @@ var bookSchema = new Schema({
     read: {
         type: Boolean,
         default: false
-    }
+    },
+    reviews: [review.schema]
 });
 
 module.exports = mongoose.model('Book', bookSchema);

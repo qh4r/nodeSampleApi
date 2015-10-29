@@ -21,8 +21,10 @@ app.use(bodyParser.json());
 //Models
 var Book = require('./models/bookModel');
 
+var Review = require('./models/reviewModel');
+
 //Controllers
-var bookController = require('./controllers/bookController')(Book);
+var bookController = require('./controllers/bookController')(Book, Review.Model);
 
 //Routers
 var bookRouter = require('./routes/bookRoutes')(bookController);

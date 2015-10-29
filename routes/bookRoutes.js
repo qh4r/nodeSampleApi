@@ -15,6 +15,10 @@ var routes = function (bookController) {
         .patch(bookController.patch)
         .delete(bookController.delete);
 
+    bookRouter.route('/:bookId/review')
+        .get(bookController.getSingle)
+        .post(bookController.addReview);
+
     return bookRouter;
 };
 
